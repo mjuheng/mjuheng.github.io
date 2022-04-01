@@ -1,6 +1,6 @@
 ---
 layout: wiki
-title: git-Error
+title: GitError
 cate1: Error
 cate2: Git
 description: Git的一些错误处理。
