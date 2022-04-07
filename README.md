@@ -2,6 +2,10 @@
 
 我的个人博客：<https://mjuheng.github.io>，欢迎 Star 和 Fork。
 
+## 原作链接
+
+https://github.com/mzlogin/mzlogin.github.io
+
 ## 概览
 
 <!-- vim-markdown-toc GFM -->

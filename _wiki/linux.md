@@ -11,6 +11,15 @@ keywords: Linux
 
 ## 实用命令
 
+
+### netstat
+
+netstat -tunlp用于显示tcp，udp的端口和进程等相关情况
+
+```sh
+netstat -tunlp | grep 8080
+```
+
 ### chown
 
 更改文件所有者和组。
