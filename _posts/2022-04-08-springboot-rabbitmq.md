@@ -122,7 +122,8 @@ public String sendDirectMessage() {
     return "ok";
 }
 ```
-消费者（消费方不在意交换机的类型，只监听指定队列，所以后续的其它交换机模型，都可以使用该消费者方法）
+### 消费者
+消费方不在意交换机的类型，只监听指定队列，所以后续的其它交换机模型，都可以使用该消费者方法
 ```java
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

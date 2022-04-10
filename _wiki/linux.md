@@ -12,12 +12,22 @@ keywords: Linux
 ## 实用命令
 
 
-### netstat
+### 查询端口占用情况
 
-netstat -tunlp用于显示tcp，udp的端口和进程等相关情况
-
+显示tcp，udp的端口和进程等相关情况
 ```sh
 netstat -tunlp | grep 8080
+```
+
+查询文件占用的端口
+```shell
+ps -ef | grep 文件名
+```
+
+端口所运行相关文件位置
+```shell
+netstat -antlp | grep 8080
+pwdx {上一步查询出的pid号}
 ```
 
 ### chown
