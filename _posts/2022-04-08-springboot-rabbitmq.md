@@ -130,11 +130,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@RabbitListener(queues = "TestDirectQueue")//监听的队列名称 TestDirectQueue
 public class DirectReceiver {
 
-    @RabbitHandler
-    public void process(String testMessage) {
+    @RabbitListener(queues = "TestDirectQueue")
+    public void process(String testMessage, Message message, Channel channel) {
         System.out.println("DirectReceiver消费者收到消息  : " + testMessage);
     }
 }
@@ -355,7 +354,30 @@ basic.ack用于肯定确认
 basic.nack用于否定确认（注意：这是AMQP 0-9-1的RabbitMQ扩展） 
 basic.reject用于否定确认，但与basic.nack相比有一个限制:一次只能拒绝单条消息 
 
-### 手动确认样例
+### 手动确认样例（推荐）
+添加配置文件
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        # 消息确认模式
+        acknowledge-mode: manual
+```
+```java
+@RabbitListener(queues = "TestDirectQueue")
+public void process(String testMessage, Message message, Channel channel) throws IOException {
+    try {
+        System.out.println("DirectReceiver消费者收到消息  : " + testMessage);
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+    } catch (Exception e) {
+        // 第二个参数，false只拒绝当前消息包，true拒绝小于当前包id的所有消息
+        // 第三个参数，是否重新放回队列顶部，不建议返回可能会因为消息无法消费导致系统循环报错，打满CPU占用，建议做日志记录，手动修复数据
+        channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+    }
+}
+```
+### 手动确认样例（不推荐）
 ```java
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
@@ -426,4 +448,16 @@ public class MessageListenerConfig {
     }
 
 }
+```
+
+# 消息顺序性
+其实队列本身是有顺序的，但是生产环境服务实例一般都是集群，当消费者是多个实例时，队列中的消息会分发到所有实例进行消费（同一个消息只能发给一个消费者实例），这样就不能保证消息顺序的消费，因为你不能确保哪台机器执行消费端业务代码的速度快
+所以对于需要保证顺序消费的业务，我们可以只部署一个消费者实例，然后设置 RabbitMQ 每次只推送一个消息，再开启手动 ack 即可，配置如下
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        # 每次推送消息个数
+        prefetch: 1 
 ```
