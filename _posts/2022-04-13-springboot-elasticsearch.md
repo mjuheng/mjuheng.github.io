@@ -99,20 +99,20 @@ public class StudentInfo implements Serializable {
 ```
 ### 注解属性解析
 @Document：在类级别应用以指示该类是映射到数据库的候选对象
-    indexName：存储此实体的索引的名称。这可以包含一个 SpEL 模板表达式，如"log-#
-    shards：索引的分片数
-    replicas：索引的副本数
-    createIndex: 标记是否在存储库引导时创建索引。默认值为true
+indexName：存储此实体的索引的名称。这可以包含一个 SpEL 模板表达式，如"log-#
+shards：索引的分片数
+replicas：索引的副本数
+createIndex: 标记是否在存储库引导时创建索引。默认值为true
 
 @Id：应用于字段级别以标记用于标识目的的字段
 
 @Transient：默认情况下，所有字段在存储或检索时都映射到文档，此注释不包括该字段。
 
 @Field：应用于字段级别并定义字段的属性，大部分属性映射到各自的Elasticsearch Mapping定义
-    name：将在 Elasticsearch 文档中表示的字段名称，如果未设置，则使用 Java 字段名称
-    type：字段类型
-    format以及Date类型pattern的定义
-    store: 标记原始字段值是否应该存储在 Elasticsearch 中，默认值为false。
+name：将在 Elasticsearch 文档中表示的字段名称，如果未设置，则使用 Java 字段名称
+type：字段类型
+format以及Date类型pattern的定义
+store: 标记原始字段值是否应该存储在 Elasticsearch 中，默认值为false。
 
 ## 创建Mapper
 集成自ElasticsearchRepository接口，提供了基础的增删改方法
