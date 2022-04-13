@@ -98,21 +98,21 @@ public class StudentInfo implements Serializable {
 }
 ```
 ### 注解属性解析
-@Document：在类级别应用以指示该类是映射到数据库的候选对象
-indexName：存储此实体的索引的名称。这可以包含一个 SpEL 模板表达式，如"log-#
-shards：索引的分片数
-replicas：索引的副本数
-createIndex: 标记是否在存储库引导时创建索引。默认值为true
+@Document：在类级别应用以指示该类是映射到数据库的候选对象 
+    indexName：存储此实体的索引的名称。这可以包含一个 SpEL 模板表达式，如"log-# 
+    shards：索引的分片数 
+    replicas：索引的副本数 
+    createIndex: 标记是否在存储库引导时创建索引。默认值为true
 
 @Id：应用于字段级别以标记用于标识目的的字段
 
 @Transient：默认情况下，所有字段在存储或检索时都映射到文档，此注释不包括该字段。
 
-@Field：应用于字段级别并定义字段的属性，大部分属性映射到各自的Elasticsearch Mapping定义
-name：将在 Elasticsearch 文档中表示的字段名称，如果未设置，则使用 Java 字段名称
-type：字段类型
-format以及Date类型pattern的定义
-store: 标记原始字段值是否应该存储在 Elasticsearch 中，默认值为false。
+@Field：应用于字段级别并定义字段的属性，大部分属性映射到各自的Elasticsearch Mapping定义 
+    name：将在 Elasticsearch 文档中表示的字段名称，如果未设置，则使用 Java 字段名称 
+    type：字段类型 
+    format以及Date类型pattern的定义 
+    store: 标记原始字段值是否应该存储在 Elasticsearch 中，默认值为false。
 
 ## 创建Mapper
 集成自ElasticsearchRepository接口，提供了基础的增删改方法
@@ -193,11 +193,11 @@ public class StudentInfoBiz {
 }
 ```
 ### 查询参数解析
-QueryBuilders.matchQuery() 会根据分词器进行分词，分词之后去查询
-QueryBuilders.termQuery() 不会进行分词，且完全等于才会匹配
-QueryBuilders.termsQuery() 一个字段匹配多个值，where name = ‘A’ or name = ‘B’
-QueryBuilders.multiMatchQuery() 会分词 一个值对应多个字段 where username = ‘zs’ or password = ‘zs’
-QueryBuilders.matchPhraseQuery() 不会分词，当成一个整体去匹配，相当于 %like%
+QueryBuilders.matchQuery() 会根据分词器进行分词，分词之后去查询 
+QueryBuilders.termQuery() 不会进行分词，且完全等于才会匹配 
+QueryBuilders.termsQuery() 一个字段匹配多个值，where name = ‘A’ or name = ‘B’ 
+QueryBuilders.multiMatchQuery() 会分词 一个值对应多个字段 where username = ‘zs’ or password = ‘zs’ 
+QueryBuilders.matchPhraseQuery() 不会分词，当成一个整体去匹配，相当于 %like% 
 如果想使用一个字段匹配多个值，并且这多个值是and关系，如下 要求查询的数据中必须包含北京‘和’天津QueryBuilders.matchQuery(“address”,“北京 天津”).operator(Operator.AND)
-如果想使用一个字段匹配多个值，并且这多个值是or关系，如下 要求查询的数据中必须包含北京‘或’天津
+如果想使用一个字段匹配多个值，并且这多个值是or关系，如下 要求查询的数据中必须包含北京‘或’天津 
 QueryBuilders.matchQuery(“address”,“北京 天津”).operator(Operator.OR)
