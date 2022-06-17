@@ -201,3 +201,42 @@ QueryBuilders.matchPhraseQuery() 不会分词，当成一个整体去匹配，�
 如果想使用一个字段匹配多个值，并且这多个值是and关系，如下 要求查询的数据中必须包含北京‘和’天津QueryBuilders.matchQuery(“address”,“北京 天津”).operator(Operator.AND)
 如果想使用一个字段匹配多个值，并且这多个值是or关系，如下 要求查询的数据中必须包含北京‘或’天津 
 QueryBuilders.matchQuery(“address”,“北京 天津”).operator(Operator.OR)
+
+
+# REST API操作ElasticSearch
+### 创建索引
+http://ip:port/索引   put
+{
+    "settings": {
+        "number_of_shards": 3,
+        "number_of_replicas": 1
+    },
+    "mappings": {
+        "properties": {
+            "name": {
+                "type": "text"
+            },
+            "country": {
+                "type": "keyword"
+            },
+            "age": {
+                "type": "integer"
+            },
+            "date": {
+                "type": "date",
+                "format": "yyyy-MM-dd HH:mm:ss"
+            }
+        }
+    }
+}
+### 新增数据
+http://ip:port/索引/类型/id  put(指定id)
+http://ip:port/索引/类型     post(自动生成随机id)
+{
+"name": "张三",
+"country": "China"
+}
+### 查询全部索引
+http://ip:port/_cat/indices?v
+### 查询索引数据
+http://ip:port/索引名/_search?pretty
