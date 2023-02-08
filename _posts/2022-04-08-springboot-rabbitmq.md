@@ -460,9 +460,7 @@ public class MessageListenerConfig {
 2. 延迟重试。比如消费者从队列里消费消息时失败了，但是想要延迟一段时间后自动重试。
 
 如果不使用延迟队列，那么我们只能通过一个轮询扫描程序去完成。这种方案既不优雅，也不方便做成统一的服务便于开发人员使用。但是使用延迟队列的话，我们就可以轻而易举地完成。
-如何实现？别急，在下文中，我们将详细介绍如何利用Spring Boot加RabbitMQ来实现延迟队列。
-本文出现的示例代码都已push到Github仓库中：github.com/Lovelcp/blo…
-实现思路在介绍具体的实现思路之前，我们先来介绍一下RabbitMQ的两个特性，一个是Time-To-Live Extensions，另一个是Dead Letter Exchanges。
+RabbitMQ的两个特性，一个是Time-To-Live Extensions，另一个是Dead Letter Exchanges。
 Time-To-Live ExtensionsRabbitMQ允许我们为消息或者队列设置TTL（time to live），也就是过期时间。TTL表明了一条消息可在队列中存活的最大时间，单位为毫秒。也就是说，当某条消息被设置了TTL或者当某条消息进入了设置了TTL的队列时，这条消息会在经过TTL秒后“死亡”，成为Dead Letter。如果既配置了消息的TTL，又配置了队列的TTL，那么较小的那个值会被取用。更多资料请查阅官方文档。
 Dead Letter Exchange刚才提到了，被设置了TTL的消息在过期后会成为Dead Letter。其实在RabbitMQ中，一共有三种消息的“死亡”形式：
 
@@ -470,7 +468,7 @@ Dead Letter Exchange刚才提到了，被设置了TTL的消息在过期后会成
 消息因为设置了TTL而过期。
 消息进入了一条已经达到最大长度的队列。
 
-如果队列设置了Dead Letter Exchange（DLX），那么这些Dead Letter就会被重新publish到Dead Letter Exchange，通过Dead Letter Exchange路由到其他队列。更多资料请查阅官方文档。
+如果队列设置了Dead Letter Exchange（DLX），那么这些Dead Letter就会被重新publish到Dead Letter Exchange，通过Dead Letter Exchange路由到其他队列。
 
 ## 创建延迟交换机和死信交换机
 生产者与消费者与上文类似，生产者将消息发送至延迟队列，消费者监听死信队列
@@ -519,6 +517,28 @@ public class DelayRabbitConfig {
     Binding bindingDelayReceiveDirect() {
         return BindingBuilder.bind(testDelayReceiveQueue()).to(testDelayReceiveExchange()).with("TestDelayReceiveRouting");
     }
+}
+```
+
+## 发送消息时设置过期时间
+```java
+@GetMapping("/sendDelayMessage")
+public String sendDelayMessage() {
+    Map<String, Object> map = new HashMap<>();
+    map.put("messageId", String.valueOf(UUID.randomUUID()));
+    map.put("messageData", "test message, hello!");
+    map.put("createTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+    // 延时10s
+    MessagePostProcessor messagePostProcessor = message -> {
+        message.getMessageProperties().setExpiration("10000");
+        return message;
+    };
+    //将消息携带绑定键值：TestDirectRouting 发送到交换机TestDirectExchange
+    rabbitTemplate.convertAndSend("TestDelayExchange", "TestDelayRouting", JSON.toJSONString(map), messagePostProcessor);
+    log.info("发送消息啦！！！");
+
+    return "ok";
 }
 ```
 
