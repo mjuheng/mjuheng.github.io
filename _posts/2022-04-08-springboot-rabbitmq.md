@@ -335,6 +335,53 @@ public class RabbitConfig {
 ③消息推送到sever，交换机和队列啥都没找到
 ④消息推送成功
 
+# 动态创建交换机和队列
+```java
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.Resource;
+
+@Configuration
+public class ExchangeAndQueueConfig {
+
+    @Resource
+    private RabbitAdmin rabbitAdmin;
+
+    @Bean
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
+        // 服务启动时候开启自动启动
+        rabbitAdmin.setAutoStartup(true);
+        return rabbitAdmin;
+    }
+
+    /**
+     * 生成交换机，绑定队列
+     *
+     * @param exchange   交换机
+     * @param routingKey 路由
+     * @param queueName  队列
+     */
+    public void createDirectBindQueue(String exchange, String routingKey, String queueName) {
+        //声明
+        DirectExchange directExchange = new DirectExchange(exchange, true, false);
+        Queue queue = new Queue(queueName, true, false, false);
+        Binding binding = BindingBuilder.bind(queue).to(directExchange).with(routingKey);
+        //创建
+        rabbitAdmin.declareQueue(queue);
+        rabbitAdmin.declareExchange(directExchange);
+        rabbitAdmin.declareBinding(binding);
+    }
+}
+```
+
 # 消息确认机制
 和生产者的消息确认机制不同，因为消息接收本来就是在监听消息，符合条件的消息就会消费下来。
 所以，消息接收的确认机制主要存在三种模式：
