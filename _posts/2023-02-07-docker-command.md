@@ -43,6 +43,11 @@ docker cp /path 容器id:/path
 docker cp  容器id:/path /path/
 ```
 
+### 修改镜像标签
+```shell
+docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
+```
+
 ### 容器制作镜像
 -a :提交的镜像作者；
 
@@ -57,8 +62,10 @@ docker commit -a "runoob.com" -m "my apache" a404c6c174a2  mymysql:v1
 
 ### 镜像导出
 ```shell
-# 根据镜像ID将镜像导出成一个文件
+# 根据镜像ID将镜像导出成一个文件，导入时镜像名为null
 docker save 镜像id > 文件名.tar
+# 导入时镜像名与导出时一致
+docker save 镜像名:版本号 > 文件名.tar
 docker export 镜像id > 文件名.tar
 
 # 将多个镜像打包成一个文件
